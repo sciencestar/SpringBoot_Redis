@@ -132,7 +132,10 @@ public class RedisUtil {
     public boolean set(String key, Object value, long time) {
         try {
             if (time > 0) {
+                //给key设置锁
                 redisTemplate.opsForValue().setIfAbsent(key,value);
+                //给锁设置过期时间
+                redisTemplate.expire(key,3000, TimeUnit.SECONDS);
                 redisTemplate.opsForValue().set(key, value, time, TimeUnit.SECONDS);
             } else {
                 set(key, value);
