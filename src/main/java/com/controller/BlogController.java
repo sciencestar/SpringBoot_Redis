@@ -33,7 +33,10 @@ public class BlogController {
 
     @RequestMapping(value = "setRedis/{key}",consumes = "application/json")
     public boolean setRedis(@PathVariable("key") String key,@RequestBody Blog blog){
-        return redisUtil.set(key,blog,30);
+        redisUtil.begin();
+        Boolean flag = redisUtil.set(key,blog,30000);
+        redisUtil.exec();
+        return flag;
     }
     @RequestMapping("/getRedis/{id}")
     public Object redisGet(@PathVariable("id") Long blogId) {

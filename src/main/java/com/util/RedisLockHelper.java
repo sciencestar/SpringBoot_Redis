@@ -2,6 +2,8 @@ package com.util;
 
 import lombok.extern.slf4j.Slf4j;
 import com.google.common.base.Strings;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
@@ -16,6 +18,8 @@ import org.springframework.stereotype.Component;
 @Component
 @Slf4j
 public class RedisLockHelper {
+    Logger log = LoggerFactory.getLogger(RedisLockHelper.class);
+
     @Autowired private StringRedisTemplate stringRedisTemplate;
 
     /**

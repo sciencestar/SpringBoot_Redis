@@ -1,0 +1,59 @@
+#指定基础镜像
+FROM centos:7
+
+#镜像作者
+MAINTAINER lupf "sciencestar9346@qq.com"
+
+#定义路径的环境变量
+ENV REDIS_HOME /Users/lxc/Public
+
+#将Dockerfile同级目录下的redis-4.0.1.tar.gz复制到镜像的根目录
+ADD redis-4.0.1.tar.gz /
+
+#创建安装目录，根据环境变量信息，实际的创建目录为:/Users/lxc/Public/redis
+RUN mkdir -p $REDIS_HOME/redis
+
+#将Dockerfile同级目录下redis-4.0.1中的redis配置文件拷贝到容器的/Users/lxc/Public/redis目录中
+ADD redis-4.0.1/redis.conf $REDIS_HOME/redis/
+
+#更新镜像的yum
+RUN yum -y update
+
+#安装gcc相关编译工具
+RUN yum install -y gcc make
+
+#指定工作目录
+WORKDIR /redis-4.0.1
+
+#执行编译
+RUN make
+
+#移动编译后的redis-server到容器相关的目录
+RUN mv /redis-4.0.1/src/redis-server  $REDIS_HOME/redis/
+
+#移动到上一级
+WORKDIR /
+
+#删除解压文件
+RUN rm -rf /redis-4.0.1
+
+#删除对于的工具
+RUN yum remove -y gcc make
+
+#添加数据卷
+#/Users/lxc/Public/redis/logs/redis-server.log
+#此目录需要和redis.conf中logfile一致
+VOLUME ["/Users/lxc/Public/redis/logs"]
+
+#暴露6379的端口
+EXPOSE 6379
+FROM lupf/redis-cluster:latest
+MAINTAINER lupf "sciencestar9346.com"
+ENTRYPOINT ["/Users/lxc/Public/redis/redis-server", "/Users/lxc/Public/redis/redis.conf"]
+
+
+docker run --name redis-6379 -p 6379:6379 -d hub.c.163.com/library/redis
+docker run --name redis-6380 -p 6380:6379 -d hub.c.163.com/library/redis
+docker run --name redis-6381 -p 6381:6379 -d hub.c.163.com/library/redis
+
+docker inspect 6aace550ae72 3be2b0716645 287ff02a0bdd

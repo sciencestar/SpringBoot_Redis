@@ -6,6 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDate;
+import java.util.Date;
+
 /**
  * @ClassName RedisController
  * @Description: TODO
@@ -23,6 +26,12 @@ public class RedisController {
      * 超时时间 5s
      */
     private static final int TIMEOUT = 5*1000;
+    private LocalDate localDate;
+
+    public RedisController() {
+        localDate = LocalDate.of(2018,2,21);
+        System.out.println(localDate.getDayOfYear()+" "+localDate.getDayOfMonth());
+    }
 
     @RequestMapping(value = "/seckilling")
     public String Seckilling(String targetId){
@@ -38,7 +47,6 @@ public class RedisController {
             return "活动结束.";
         }else {
             // 下单 e.g. buyStockByTargetId
-
             //减库存 不做处理的话，高并发下会出现超卖的情况，下单数，大于减库存的情况。虽然这里减了，但由于并发，减的库存还没存到map中去。新的并发拿到的是原来的库存
             surplusCount =surplusCount-1;
             try{
@@ -47,13 +55,10 @@ public class RedisController {
                 e.printStackTrace();
             }
             // 减库存操作数据库 e.g. updateStockByTargetId
-
             // buyStockByTargetId 和 updateStockByTargetId 可以同步完成(或者事物)，保证原子性。
         }
-
         //解锁
         redisLockHelper.unlock(targetId,String.valueOf(time));
-
         return "恭喜您，秒杀成功。";
     }
 }
