@@ -1,6 +1,9 @@
 package com.controller;
 
 import com.domin.Blog;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -8,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 import com.util.RedisUtil;
+
+import java.util.logging.Logger;
 
 /**
  * @ClassName BlogController
@@ -19,6 +24,7 @@ import com.util.RedisUtil;
 @RestController
 @RequestMapping("/blogs")
 public class BlogController {
+    private static final Log log = LogFactory.getLog(BlogController.class);
 
     @Autowired
     private RedisUtil redisUtil;
@@ -31,16 +37,22 @@ public class BlogController {
         return view;
     }
 
-    @RequestMapping(value = "setRedis/{key}",consumes = "application/json")
-    public boolean setRedis(@PathVariable("key") String key,@RequestBody Blog blog){
+    @RequestMapping(value = "setRedis/{key}", consumes = "application/json")
+    public boolean setRedis(@PathVariable("key") String key, @RequestBody Blog blog) {
         redisUtil.begin();
-        Boolean flag = redisUtil.set(key,blog,30000);
+        Boolean flag = redisUtil.set(key, blog, 30000);
         redisUtil.exec();
         return flag;
     }
+
     @RequestMapping("/getRedis/{id}")
     public Object redisGet(@PathVariable("id") Long blogId) {
-        Blog blog = (Blog) redisUtil.get("blog"+blogId);
+        Blog blog = null;
+        if (redisUtil.hasKey(String.valueOf("blog"+blogId))) {
+            blog = (Blog) redisUtil.get("blog" + blogId);
+        }else {
+            log.info("该数据不存在!");
+        }
         return blog;
     }
 }
