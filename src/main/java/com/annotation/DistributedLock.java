@@ -7,16 +7,21 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.concurrent.TimeUnit;
 
-/**
- * redis锁注解
- * @author MAZHEN
- */
+@Target({ ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.METHOD})
 @Documented
-public @interface RedisLock {
-    String lockPrefix() default "";
-    long timeOut() default 60;
+public @interface DistributedLock {
+
+    /** key前缀 */
+    String prefix() default "";
+
+    /** 过期秒数,默认为5秒 */
+    int expire() default 5;
+
+    /** 超时时间单位，默认为秒 */
     TimeUnit timeUnit() default TimeUnit.SECONDS;
+
+    /** Key的分隔符（默认 :）  */
+    String delimiter() default ":";
 
 }

@@ -1,9 +1,9 @@
 package com.controller;
 
+import com.annotation.DistributedLock;
 import com.domin.Blog;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 import com.util.RedisUtil;
 
-import java.util.logging.Logger;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @ClassName BlogController
@@ -37,6 +37,7 @@ public class BlogController {
         return view;
     }
 
+    @DistributedLock(prefix = "分布式锁")
     @RequestMapping(value = "setRedis/{key}", consumes = "application/json")
     public boolean setRedis(@PathVariable("key") String key, @RequestBody Blog blog) {
         redisUtil.begin();
@@ -45,6 +46,7 @@ public class BlogController {
         return flag;
     }
 
+    @DistributedLock(prefix = "分布式锁")
     @RequestMapping("/getRedis/{id}")
     public Object redisGet(@PathVariable("id") Long blogId) {
         Blog blog = null;
