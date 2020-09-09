@@ -1,5 +1,6 @@
 package com.util;
 
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -17,7 +18,7 @@ import java.util.concurrent.TimeUnit;
  * @Date 2020/2/24
  * @Version V1.0
  **/
-@Service
+@Component
 public class RedisUtil {
 
     private static final String LOCK_SUCCESS = "OK";
@@ -35,7 +36,7 @@ public class RedisUtil {
      * @param time 时间(秒)
      * @return
      */
-    public boolean expire(String key, long time) {
+    public  boolean expire(String key, long time) {
         try {
             if (time > 0) {
                 redisTemplate.expire(key, time, TimeUnit.SECONDS);
@@ -94,6 +95,16 @@ public class RedisUtil {
         if (StringUtils.isEmpty(keys)) {
             redisTemplate.delete(keys);
         }
+    }
+
+    /**
+     * 实现命令：TTL key，以秒为单位，返回给定 key的剩余生存时间(TTL, time to live)。
+     *
+     * @param key
+     * @return
+     */
+    public long ttl(String key) {
+        return redisTemplate.getExpire(key);
     }
 
     // ============================String=============================

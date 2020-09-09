@@ -52,8 +52,16 @@ MAINTAINER lupf "sciencestar9346.com"
 ENTRYPOINT ["/Users/lxc/Public/redis/redis-server", "/Users/lxc/Public/redis/redis.conf"]
 
 
-docker run --name redis-6379 -p 6379:6379 -d hub.c.163.com/library/redis
+docker run --name redis-6379 -p 6382:6379 -d hub.c.163.com/library/redis
 docker run --name redis-6380 -p 6380:6379 -d hub.c.163.com/library/redis
 docker run --name redis-6381 -p 6381:6379 -d hub.c.163.com/library/redis
 
 docker inspect 6aace550ae72 3be2b0716645 287ff02a0bdd
+
+docker exec 92679f98a073 rabbitmq-plugins enable rabbitmq_management
+docker exec 92679f98a073 rabbitmq-plugins enable rabbitmq_mqtt
+docker exec 92679f98a073 rabbitmq-plugins enable rabbitmq_web_mqtt
+
+rabbit@rabbit_host1
+
+{"datas":[{"channel":"sum","metric":"temperature","producer":"weather","sn":"IJA0101-1002245","time":"1543207156000","value":"80"}],"ver":"1.0"}
